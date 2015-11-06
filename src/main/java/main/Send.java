@@ -5,6 +5,7 @@ package main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
+import models.Amqpa;
 import models.Task;
 import resources.SummonerResource;
 
@@ -17,7 +18,7 @@ public class Send {
      */
     public static void main(String[] args) throws Exception {
         //Connection to the amqp server
-        Channel channel = Amqp.connect();
+        Channel channel = Amqpa.connect();
 
         //Create a new task with parameter the class should be attacked and the method to invoke !
 
@@ -29,7 +30,7 @@ public class Send {
         String message = mapper.writeValueAsString(task);
 
         //publish the json to the queue and write it !
-        channel.basicPublish("", Amqp.QUEUE_NAME, null, message.getBytes());
+        channel.basicPublish("", Amqpa.QUEUE_NAME, null, message.getBytes());
         System.out.println(" [x] Sent '" + task + " - " + message + "'");
         System.exit(0);
     }
