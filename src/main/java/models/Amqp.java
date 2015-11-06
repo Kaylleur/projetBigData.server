@@ -9,9 +9,12 @@ import com.rabbitmq.client.ConnectionFactory;
  */
 public class Amqp {
 
-    public final static String QUEUE_NAME = "hello";
+    public final static String QUEUE_TASK = "task";
+    public final static String QUEUE_MODEL = "models";
 
-    public static Channel connect()throws Exception{
+    private static Channel currentChannel;
+
+    public static void connect(String queueName)throws Exception{
         //get variable
         String uri = System.getenv("cloud_amqp").split(";")[0];
         String username = System.getenv("cloud_amqp").split(";")[1];
@@ -25,7 +28,11 @@ public class Amqp {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-        return channel;
+        channel.queueDeclare(queueName, false, false, false, null);
+        currentChannel = channel;
+    }
+
+    public static Channel getCurrentChannel() {
+        return currentChannel;
     }
 }

@@ -9,6 +9,8 @@ import models.Amqp;
 import models.Task;
 import resources.SummonerResource;
 
+import java.io.File;
+
 public class Send {
 
     /**
@@ -18,20 +20,26 @@ public class Send {
      */
     public static void main(String[] args) throws Exception {
         //Connection to the amqp server
-        Channel channel = Amqp.connect();
+        Amqp.connect(Amqp.QUEUE_TASK);
+        Channel channel = Amqp.getCurrentChannel();
 
-        //Create a new task with parameter the class should be attacked and the method to invoke !
-
-//        Task task = new Task<Summoner>(Summoner.class,"getSummonerWithId",new Class[]{int.class},new Object[]{1});
-        Task task = new Task(SummonerResource.getSummoner(19838593));
-
-        //Json mapper to convert to JSON
         ObjectMapper mapper = new ObjectMapper();
-        String message = mapper.writeValueAsString(task);
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
-        //publish the json to the queue and write it !
-        channel.basicPublish("", Amqp.QUEUE_NAME, null, message.getBytes());
-        System.out.println(" [x] Sent '" + task + " - " + message + "'");
+        Integer[] ids = mapper.readValue(new File(classLoader.getResource("summonersIds.json").getFile()),Integer[].class);
+        //Create a new task with parameter the class should be attacked and the method to invoke !
+        for(Integer id : ids){
+            Task task = new Task(SummonerResource.getSummoner(id));
+
+            //Json mapper to convert to JSON
+            String message = mapper.writeValueAsString(task);
+
+            //publish the json to the queue and write it !
+            channel.basicPublish("", Amqp.QUEUE_TASK, null, message.getBytes());
+            System.out.println(" [x] Sent '" + task + " - " + message + "'");
+        }
+
+
         System.exit(0);
     }
 }
