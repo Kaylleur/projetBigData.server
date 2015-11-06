@@ -5,7 +5,6 @@ package main;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
-import models.Amqp;
 import models.Task;
 import resources.SummonerResource;
 
