@@ -7,7 +7,7 @@ import com.rabbitmq.client.ConnectionFactory;
 /**
  * Created by Thomas on 01/11/2015.
  */
-public class Amqpa {
+public class Amqp {
 
     public final static String QUEUE_NAME = "hello";
 
