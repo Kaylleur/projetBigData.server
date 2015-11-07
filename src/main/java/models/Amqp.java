@@ -13,19 +13,23 @@ public class Amqp {
     public final static String QUEUE_MODEL = "models";
 
     private static Channel currentChannel;
+    public static Connection connection;
 
     public static void connect(String queueName)throws Exception{
-        //get variable
-        String uri = System.getenv("cloud_amqp").split(";")[0];
-        String username = System.getenv("cloud_amqp").split(";")[1];
-        String password = System.getenv("cloud_amqp").split(";")[2];
+        if(connection == null){
+            //get variable
+            String uri = System.getenv("cloud_amqp").split(";")[0];
+            String username = System.getenv("cloud_amqp").split(";")[1];
+            String password = System.getenv("cloud_amqp").split(";")[2];
 
-        //initialize channel
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setUri(uri);
-        factory.setUsername(username);
-        factory.setPassword(password);
-        Connection connection = factory.newConnection();
+            //initialize channel
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setUri(uri);
+            factory.setUsername(username);
+            factory.setPassword(password);
+            connection = factory.newConnection();
+        }
+
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(queueName, false, false, false, null);

@@ -26,7 +26,7 @@ public class Send {
         ObjectMapper mapper = new ObjectMapper();
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
-        Integer[] ids = mapper.readValue(new File(classLoader.getResource("summonersIds.json").getFile()),Integer[].class);
+        Integer[] ids = mapper.readValue(new File(classLoader.getResource("ids.json").getFile()),Integer[].class);
         //Create a new task with parameter the class should be attacked and the method to invoke !
         for(Integer id : ids){
             Task task = new Task(SummonerResource.getSummoner(id));
@@ -37,9 +37,11 @@ public class Send {
             //publish the json to the queue and write it !
             channel.basicPublish("", Amqp.QUEUE_TASK, null, message.getBytes());
             System.out.println(" [x] Sent '" + task + " - " + message + "'");
+            Thread.sleep((long)1200);
         }
 
-
+        channel.close();
+        Amqp.connection.close();
         System.exit(0);
     }
 }
